@@ -5,18 +5,16 @@ services:
     image: mysql:8.0
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       MYSQL_DATABASE: pteroca
       MYSQL_USER: pteroca
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-pteroca}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     volumes:
       - db_data_prod:/var/lib/mysql
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
       timeout: 10s
       retries: 5
-    env_file:
-      - .env
 
   web:
     build:
@@ -28,13 +26,11 @@ services:
       db:
         condition: service_healthy
     expose:
-      - "80" # Coolify/Traefik will route HTTP to this
+      - "80" # Coolify / Traefik routes HTTP to this
     environment:
       APP_ENV: prod
-      APP_SECRET: ${APP_SECRET:-change_me}
-      DATABASE_URL: ${DATABASE_URL:-mysql://pteroca:${MYSQL_PASSWORD:-pteroca}@db:3306/pteroca?serverVersion=8.0}
-      CURL_CA_BUNDLE: /etc/ssl/certs/ca-certificates.crt
-      SSL_CERT_FILE: /etc/ssl/certs/ca-certificates.crt
+      APP_SECRET: ${APP_SECRET}
+      DATABASE_URL: ${DATABASE_URL}
     working_dir: /app
     volumes:
       - app_var:/app/var
@@ -62,8 +58,6 @@ services:
         echo 'Starting production server...';
         /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.conf
       "
-    env_file:
-      - .env
 
 volumes:
   db_data_prod:
